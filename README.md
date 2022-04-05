@@ -1,3 +1,8 @@
+#NOTE:
+
+This is a fork of the FrontierDevelopment/PyRain repo, made to be used by our project group in Google Colab. 
+
+
 # Update: Data now publicly available!
 
 We are very happy to announce that the memmap datasets are now available publicly at:
