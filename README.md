@@ -1,4 +1,4 @@
-#NOTE:
+# IMPORTANT NOTE:
 
 This is a fork of the FrontierDevelopment/PyRain repo, made to be used by our project group in Google Colab. 
 
