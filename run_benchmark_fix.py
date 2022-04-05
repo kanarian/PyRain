@@ -169,6 +169,8 @@ def main(hparams):
     trainer = pl.Trainer(
         # gpus=hparams['gpus'],
         tpu_cores=8,
+        # accelerator="TPU",
+        # devices=8,
         logger=logger,
         max_epochs=hparams['epochs'],
         # distributed_backend=hparams['distributed_backend'],
@@ -195,7 +197,9 @@ def main_test(hparams):
     model, hparams, loaderDict, normalizer, collate = RegressionModel.load_model(log_dir, \
         multi_gpu=hparams['multi_gpu'], num_workers=hparams['num_workers'])
     trainer = pl.Trainer(
-        tpu_cores=1,
+        tpu_cores=8,
+        # accelerator="TPU",
+        # devices=8,
         logger=None,
         max_epochs=hparams['epochs'],
         # distributed_backend=hparams['distributed_backend'],
