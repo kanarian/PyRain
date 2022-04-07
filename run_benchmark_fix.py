@@ -37,14 +37,14 @@ class RegressionModel(pl.LightningModule):
         self.collate = collate
         self.multi_gpu = hparams['multi_gpu']
         self.target_v = self.categories['output'][0]
-        
+
         self.net = ConvLSTMForecaster(
                         in_channels=hparams['num_channels'],
                         output_shape=(hparams['out_channels'], *hparams['latlon']),
                         channels=(hparams['hidden_1'], hparams['hidden_2']),
                         last_ts=True,
                         last_relu=hparams['relu'])
-        
+
         self.plot = self.hparams['plot']
         if self.plot:
             # define dictionary to hold column names in input and output: {var_name: (input_col_index, output_col_index)}
@@ -54,12 +54,12 @@ class RegressionModel(pl.LightningModule):
             for ind_x, v in enumerate(self.categories['input']):
                 if v not in self.categories['output']:
                     self.idxs[v] = (ind_x, None)
-        
+
         if lat2d is None:
             lat2d = get_lat2d(hparams['grid'], self.validset.dataset)
         self.weights_lat, self.loss = define_loss_fn(lat2d)
         self.lat2d = lat2d
-    
+
     def forward(self, x):
         out = self.net(x)
         return out
@@ -93,7 +93,7 @@ class RegressionModel(pl.LightningModule):
         pred_y = self(sample_X.cuda()).cpu()
         grid = plot_random_outputs_multi_ts(sample_X, sample_y, pred_y, self.idxs, self.normalizer, self.categories['output'])
         self.logger.experiment.add_image('generated_images', grid, self.global_step)
-        
+
     def validation_epoch_end(self, outputs):
         log_dict = collect_outputs(outputs, self.multi_gpu)
         results = {'log': log_dict, 'progress_bar': {'val_loss': log_dict['val_loss']}}
@@ -108,16 +108,16 @@ class RegressionModel(pl.LightningModule):
         results = {'log': log_dict, 'progress_bar': {'test_loss': log_dict['test_loss']}}
         results = {**results, **log_dict}
         return results
-    
+
     def configure_optimizers(self):
         opt = torch.optim.Adam(self.net.parameters(), lr=self.hparams['lr'])
         sch = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, factor=0.5, patience=2)
-        # return [opt], [sch]
-        return {
-           'optimizer': opt,
-           'lr_scheduler': sch, # Changed scheduler to lr_scheduler
-           'monitor': 'val_loss'
-       }
+        return [opt], [sch]
+      #  return {
+      #     'optimizer': opt,
+      #     'lr_scheduler': sch, # Changed scheduler to lr_scheduler
+      #     'monitor': 'val_loss'
+      # }
 
     def train_dataloader(self):
         return DataLoader(self.trainset, batch_size=self.hparams['batch_size'], num_workers=self.hparams['num_workers'], collate_fn=self.collate, shuffle=True)
@@ -138,7 +138,7 @@ class RegressionModel(pl.LightningModule):
 
         # load data
         hparams, loaderDict, normalizer, collate = get_data(hparams, tvt='train_valid_test')
-        
+
         model_path = list(Path(log_dir).glob('**/*ckpt'))[0]
         print(f'Loading model {model_path.parent.stem}')
         train_set = loaderDict['train']
@@ -151,7 +151,7 @@ class RegressionModel(pl.LightningModule):
 def main(hparams):
     hparams = vars(hparams)
     hparams, loaderDict, normalizer, collate = get_data(hparams)
-    
+
     # ------------------------
     # Model
     # ------------------------
@@ -241,7 +241,7 @@ def main_baselines(hparams):
     # define loss
     lat2d = get_lat2d(hparams['grid'], loaderDict[phase].dataset)
     loss = define_loss_fn(lat2d)
-    
+
     # collect data and iterate through
     outputs = []
     if hparams['persistence']:
@@ -254,7 +254,7 @@ def main_baselines(hparams):
                 same_pred = same_pred[:len(inputs)]
             results = eval_loss(same_pred, output, lts, loss, lead_times)
             outputs.append(results)
-    
+
     # collect results
     log_dict = collect_outputs(outputs, hparams['multi_gpu'])
     log_dict = {v: float(log_dict[v].detach().cpu()) for v in log_dict}
@@ -276,7 +276,7 @@ if __name__ == '__main__':
     parser.add_argument("--forecast_time_window", type=int, default=120, help="Maximum lead time, in hours")
     parser.add_argument("--forecast_freq", type=int, default=24, help="Forecast frequency")
     parser.add_argument("--inc_time", action='store_true', help='Including hour/day/month in input')
-    # 
+    #
     parser.add_argument('--config_file', default='./config.yml', type=FileType(mode='r'), help='Config file path')
     parser.add_argument('--data_paths', nargs='+', help='Paths for dill files')
     parser.add_argument('--norm_path', type=str, help='Path of json file storing  normalisation statistics')
@@ -309,7 +309,7 @@ if __name__ == '__main__':
         add_yml_params(hparams)
 
     seed_everything(hparams.seed)
-    
+
     if hparams.test:
         main_test(hparams)
     elif hparams.persistence or hparams.climatology:
