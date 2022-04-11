@@ -1,6 +1,10 @@
 """
 Train model for benchmark tasks.
 """
+import os
+os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"  
+os.environ["CUDA_VISIBLE_DEVICES"]="0"
+
 from argparse import ArgumentParser, FileType
 from tqdm import tqdm
 import numpy as np
@@ -167,14 +171,11 @@ def main(hparams):
 
     chkpt = None if hparams['load'] is None else get_checkpoint_path(hparams['load'])
     trainer = pl.Trainer(
-        # gpus=hparams['gpus'],
-        tpu_cores=8,
-        # accelerator="TPU",
-        # devices=8,
+        gpus=hparams['gpus'],
         logger=logger,
         max_epochs=hparams['epochs'],
         # distributed_backend=hparams['distributed_backend'],
-        # strategy=hparams['distributed_backend'],
+        strategy=hparams['distributed_backend'],
         precision=16 if hparams['use_amp'] else 32,
         default_root_dir=hparams['log_path'],
         deterministic=True,
@@ -197,12 +198,10 @@ def main_test(hparams):
     model, hparams, loaderDict, normalizer, collate = RegressionModel.load_model(log_dir, \
         multi_gpu=hparams['multi_gpu'], num_workers=hparams['num_workers'])
     trainer = pl.Trainer(
-        tpu_cores=8,
-        # accelerator="TPU",
-        # devices=8,
+        gpus=hparams['gpus'],
         logger=None,
         max_epochs=hparams['epochs'],
-        # distributed_backend=hparams['distributed_backend'],
+        distributed_backend=hparams['distributed_backend'],
         default_root_dir=hparams['log_path'],
         deterministic=True
     )
@@ -293,7 +292,7 @@ if __name__ == '__main__':
     parser.add_argument("--batch_size", type=int, default=32, help="Size of the batches")
     parser.add_argument("--lr", type=float, default=5e-5, help="Learning rate")
     parser.add_argument("--epochs", type=int, default=100, help="No. of epochs to train")
-    parser.add_argument("--num_workers", type=int, default=2, help="No. of dataloader workers")
+    parser.add_argument("--num_workers", type=int, default=5, help="No. of dataloader workers")
     parser.add_argument("--test", action='store_true', help='Evaluate trained model')
     parser.add_argument("--load", type=str, help='Path of checkpoint directory to load')
     parser.add_argument("--phase", type=str, default='test', choices=['test', 'valid'], help='Which dataset to test on.')

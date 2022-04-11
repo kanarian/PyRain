@@ -1,0 +1,145 @@
+auto_bsz: false
+auto_lr: false
+batch_size: 32
+categories:
+  input:
+  - clbt-0
+  - clbt-1
+  - clbt-2
+  - sp
+  - t2m
+  - z-300
+  - z-500
+  - z-850
+  - t-300
+  - t-500
+  - t-850
+  - q-300
+  - q-500
+  - q-850
+  - clwc-300
+  - clwc-500
+  - ciwc-500
+  - clwc-850
+  - ciwc-850
+  - hour
+  - day
+  - month
+  - lsm
+  - orography
+  - lat2d
+  - lon2d
+  - slt
+  input_static:
+  - lsm
+  - orography
+  - lat2d
+  - lon2d
+  - slt
+  input_temporal:
+  - clbt-0
+  - clbt-1
+  - clbt-2
+  - sp
+  - t2m
+  - z-300
+  - z-500
+  - z-850
+  - t-300
+  - t-500
+  - t-850
+  - q-300
+  - q-500
+  - q-850
+  - clwc-300
+  - clwc-500
+  - ciwc-500
+  - clwc-850
+  - ciwc-850
+  input_temporal_clbt:
+  - clbt
+  - sp
+  - t2m
+  - z-300
+  - z-500
+  - z-850
+  - t-300
+  - t-500
+  - t-850
+  - q-300
+  - q-500
+  - q-850
+  - clwc-300
+  - clwc-500
+  - ciwc-500
+  - clwc-850
+  - ciwc-850
+  output:
+  - tp
+climatology: false
+data_paths:
+- /home/ashokolarov/Documents/Uni/MSc/DeepLearning/PyRain/data/era5625_aaai.dill
+- /home/ashokolarov/Documents/Uni/MSc/DeepLearning/PyRain/data/simsat5625.dill
+- /home/ashokolarov/Documents/Uni/MSc/DeepLearning/PyRain/data/imerg_5625.dill
+distributed_backend: dp
+epochs: 100
+forecast_freq: 24
+forecast_n_steps: 5
+forecast_time_window: 120
+gpus: -1
+grid: 5.625
+hidden_1: 384
+hidden_2: 32
+imerg: false
+inc_time: true
+latlon: !!python/tuple
+- 32
+- 64
+lead_times: !!python/object/apply:numpy.core.multiarray._reconstruct
+  args:
+  - !!python/name:numpy.ndarray ''
+  - !!python/tuple
+    - 0
+  - !!binary |
+    Yg==
+  state: !!python/tuple
+  - 1
+  - !!python/tuple
+    - 5
+  - !!python/object/apply:numpy.dtype
+    args:
+    - i8
+    - false
+    - true
+    state: !!python/tuple
+    - 3
+    - <
+    - null
+    - null
+    - null
+    - -1
+    - -1
+    - 0
+  - false
+  - !!binary |
+    GAAAAAAAAAAwAAAAAAAAAEgAAAAAAAAAYAAAAAAAAAB4AAAAAAAAAA==
+load: null
+log_path: /home/ashokolarov/Documents/Uni/MSc/DeepLearning/PyRain/logs/
+lr: 5.0e-05
+multi_gpu: false
+no_relu: false
+norm_path: /home/ashokolarov/Documents/Uni/MSc/DeepLearning/PyRain/analysis/precip_estimation/normalise/5625__00-06-01_12:00to17-12-31_11:00.json
+num_channels: 32
+num_workers: 5
+out_channels: 1
+persistence: false
+phase: test
+plot: false
+sample_freq: 3
+sample_time_window: 12
+seed: 2020
+seq_len: 5
+sources: simsat_era
+test: false
+use_amp: false
+version: null

@@ -108,7 +108,7 @@ def leadtime_into_maxtrix(lead_times: list,
     bsz = len(lead_times)
     leadtime = np.zeros((bsz, seq_len, forecast_n_steps, latlon[0], latlon[1]))
     for batch_i, lt in enumerate(lead_times):
-        leadtime[batch_i, :, lt // forecast_freq-1, :, :] = 1
+        leadtime[batch_i, :, torch.div(lt, forecast_freq, rounding_mode='floor')-1, :, :] = 1.
     return leadtime
 
 
